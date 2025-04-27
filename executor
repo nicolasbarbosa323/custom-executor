@@ -1,0 +1,150 @@
+local function createExecutorGUI()
+    -- Criar ScreenGui
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "ExecutorGui"
+    gui.Parent = game.CoreGui
+
+    -- Frame Principal
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Size = UDim2.new(0, 500, 0, 300)
+    mainFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    mainFrame.BorderSizePixel = 2
+    mainFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    mainFrame.Active = true
+    mainFrame.Draggable = true
+    mainFrame.Parent = gui
+
+    local originalSize = mainFrame.Size
+    local isMinimized = false
+
+    -- Título
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, -90, 0, 30)
+    title.Position = UDim2.new(0, 0, 0, 0)
+    title.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    title.BorderSizePixel = 0
+    title.Text = "Executor"
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.Font = Enum.Font.SourceSansBold
+    title.TextSize = 18
+    title.Parent = mainFrame
+
+    -- Minimizar
+    local minimize = Instance.new("TextButton")
+    minimize.Size = UDim2.new(0, 30, 0, 30)
+    minimize.Position = UDim2.new(1, -90, 0, 0)
+    minimize.Text = "-"
+    minimize.TextColor3 = Color3.fromRGB(255, 255, 255)
+    minimize.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    minimize.Parent = mainFrame
+
+    -- Maximizar
+    local maximize = Instance.new("TextButton")
+    maximize.Size = UDim2.new(0, 30, 0, 30)
+    maximize.Position = UDim2.new(1, -60, 0, 0)
+    maximize.Text = "◻"
+    maximize.TextColor3 = Color3.fromRGB(255, 255, 255)
+    maximize.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    maximize.Parent = mainFrame
+
+    -- Fechar
+    local close = Instance.new("TextButton")
+    close.Size = UDim2.new(0, 30, 0, 30)
+    close.Position = UDim2.new(1, -30, 0, 0)
+    close.Text = "X"
+    close.TextColor3 = Color3.fromRGB(255, 255, 255)
+    close.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    close.Parent = mainFrame
+
+    -- Área de Código (com Scroll)
+    local scrollFrame = Instance.new("ScrollingFrame")
+    scrollFrame.Size = UDim2.new(1, -20, 0, 180)
+    scrollFrame.Position = UDim2.new(0, 10, 0, 40)
+    scrollFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    scrollFrame.BorderSizePixel = 1
+    scrollFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    scrollFrame.ScrollBarThickness = 8
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 1, 0)
+    scrollFrame.Parent = mainFrame
+
+    local codeBox = Instance.new("TextBox")
+    codeBox.Size = UDim2.new(1, -10, 0, 170)
+    codeBox.Position = UDim2.new(0, 5, 0, 5)
+    codeBox.BackgroundTransparency = 1
+    codeBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    codeBox.TextXAlignment = Enum.TextXAlignment.Left
+    codeBox.TextYAlignment = Enum.TextYAlignment.Top
+    codeBox.TextWrapped = true
+    codeBox.ClearTextOnFocus = false
+    codeBox.MultiLine = true
+    codeBox.TextSize = 16
+    codeBox.Text = ""
+    codeBox.Font = Enum.Font.SourceSans
+    codeBox.Parent = scrollFrame
+
+    -- Botão EXECUTE
+    local executeButton = Instance.new("TextButton")
+    executeButton.Size = UDim2.new(0.48, 0, 0, 30)
+    executeButton.Position = UDim2.new(0, 10, 1, -40)
+    executeButton.Text = "Execute"
+    executeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    executeButton.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
+    executeButton.Font = Enum.Font.SourceSansBold
+    executeButton.TextSize = 18
+    executeButton.Parent = mainFrame
+
+    -- Botão CLEAR
+    local clearButton = Instance.new("TextButton")
+    clearButton.Size = UDim2.new(0.48, 0, 0, 30)
+    clearButton.Position = UDim2.new(0.52, 0, 1, -40)
+    clearButton.Text = "Clear"
+    clearButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    clearButton.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
+    clearButton.Font = Enum.Font.SourceSansBold
+    clearButton.TextSize = 18
+    clearButton.Parent = mainFrame
+
+    -- Funções dos botões
+    executeButton.MouseButton1Click:Connect(function()
+        local code = codeBox.Text
+        if code and code ~= "" then
+            loadstring(code)()
+        end
+    end)
+
+    clearButton.MouseButton1Click:Connect(function()
+        codeBox.Text = ""
+    end)
+
+    minimize.MouseButton1Click:Connect(function()
+        isMinimized = not isMinimized
+        if isMinimized then
+            scrollFrame.Visible = false
+            executeButton.Visible = false
+            clearButton.Visible = false
+            mainFrame.Size = UDim2.new(0, 500, 0, 30)
+        else
+            scrollFrame.Visible = true
+            executeButton.Visible = true
+            clearButton.Visible = true
+            mainFrame.Size = originalSize
+        end
+    end)
+
+    maximize.MouseButton1Click:Connect(function()
+        if mainFrame.Size == UDim2.new(1, 0, 1, 0) then
+            mainFrame.Size = originalSize
+            mainFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
+        else
+            mainFrame.Size = UDim2.new(1, 0, 1, 0)
+            mainFrame.Position = UDim2.new(0, 0, 0, 0)
+        end
+    end)
+
+    close.MouseButton1Click:Connect(function()
+        gui:Destroy()
+    end)
+end
+
+createExecutorGUI()
